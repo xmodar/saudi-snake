@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Trophy, RotateCcw, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { Trophy, RotateCcw, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Play, Sparkles, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const GRID_SIZE = 20;
@@ -124,7 +124,7 @@ export default function App() {
       if (gameOver || !hasStarted) return;
 
       if (e.key === ' ' || e.key === 'Escape') {
-         e.preventDefault();
+        e.preventDefault();
         setIsPaused(p => !p);
         return;
       }
@@ -175,13 +175,11 @@ export default function App() {
       const offset = DIRECTION_OFFSETS[directionRef.current];
       const newHead = { x: head.x + offset.x, y: head.y + offset.y };
 
-      // Collision wall
       if (newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE) {
         setGameOver(true);
         return;
       }
-      
-      // Collision self
+
       if (currentSnake.some(seg => seg.x === newHead.x && seg.y === newHead.y)) {
         setGameOver(true);
         return;
@@ -212,192 +210,116 @@ export default function App() {
         e.preventDefault();
         handleDirectionChange(dir);
       }}
-      className="w-16 h-16 bg-white/5 backdrop-blur-sm border border-[#c5a059]/30 rounded-2xl flex items-center justify-center text-[#c5a059] hover:bg-white/10 active:bg-[#c5a059] active:text-[#05140d] transition-colors touch-none shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+      className="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center text-[#dcb66f] hover:bg-white/20 active:bg-[#c5a059] active:text-[#05140d] transition-all duration-200 touch-none shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
     >
       <Icon size={32} />
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-[#05140d] text-[#e5e7eb] flex flex-col items-center justify-center p-4 font-sans selection:bg-[#c5a059] overflow-hidden">
-      <div className="w-full max-w-md flex flex-col gap-6">
-        {/* Game Board container */}
-        <div className="relative aspect-square w-full max-w-[400px] mx-auto bg-transparent border-[4px] border-[#c5a059] shadow-[0_0_40px_rgba(0,108,53,0.3)] rounded-sm overflow-hidden">
-          {/* Grid lines */}
-          <div
-            className="absolute inset-0 opacity-100 pointer-events-none w-full h-full"
-            style={{
-              backgroundImage:
-                'linear-gradient(to right, rgba(197, 160, 89, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(197, 160, 89, 0.05) 1px, transparent 1px)',
-              backgroundSize: `${100 / GRID_SIZE}% ${100 / GRID_SIZE}%`,
-            }}
-          />
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#0d2f21_0%,#06130e_45%,#030906_100%)] text-[#e5e7eb] p-4 font-sans selection:bg-[#c5a059] overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none opacity-30 [background:linear-gradient(to_right,rgba(197,160,89,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(197,160,89,0.08)_1px,transparent_1px)] [background-size:36px_36px]" />
 
-          {hasStarted && !gameOver && (
-            <>
-              {/* Food */}
-              <motion.div
-                className="absolute z-10 flex items-center justify-center drop-shadow-[0_0_10px_#c5a059]"
+      <div className="relative z-10 max-w-5xl mx-auto min-h-screen flex items-center justify-center">
+        <div className="w-full grid lg:grid-cols-[1.2fr_0.9fr] gap-6 items-center">
+          <section className="order-2 lg:order-1">
+            <div className="relative aspect-square w-full max-w-[540px] mx-auto bg-[#04110c]/80 border border-[#c5a059]/40 shadow-[0_0_50px_rgba(197,160,89,0.2)] rounded-3xl overflow-hidden">
+              <div
+                className="absolute inset-0 opacity-90 pointer-events-none w-full h-full"
                 style={{
-                  width: `${100 / GRID_SIZE}%`,
-                  height: `${100 / GRID_SIZE}%`,
-                  left: `${(food.x / GRID_SIZE) * 100}%`,
-                  top: `${(food.y / GRID_SIZE) * 100}%`,
+                  backgroundImage:
+                    'linear-gradient(to right, rgba(197, 160, 89, 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(197, 160, 89, 0.08) 1px, transparent 1px)',
+                  backgroundSize: `${100 / GRID_SIZE}% ${100 / GRID_SIZE}%`,
                 }}
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-              >
-                  <svg viewBox="0 0 24 24" fill="#c5a059" className="w-[80%] h-[80%]">
-                      <path d="M12,2A10,10 0 0,0 2,12C2,13.88 2.5,15.65 3.42,17.15L3.45,17.2L3.5,17.31L12,22L20.5,17.31L20.55,17.2L20.58,17.15C21.5,15.65 22,13.88 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12C20,13.5 19.6,14.9 18.89,16.1L12,19.92L5.11,16.1C4.4,14.9 4,13.5 4,12A8,8 0 0,1 12,4M12,6V10M12,14V18M8,12H10M14,12H16"/>
-                  </svg>
-              </motion.div>
-              
-              {/* Snake */}
-              {snake.map((segment, i) => {
-                const isHead = i === 0;
-                return (
-                  <div
-                    key={`${segment.x}-${segment.y}-${i}`}
-                    className={`absolute transition-all duration-[50ms] ${
-                      isHead ? 'z-20' : 'z-10'
-                    }`}
-                    style={{
-                      width: `${100 / GRID_SIZE}%`,
-                      height: `${100 / GRID_SIZE}%`,
-                      left: `${(segment.x / GRID_SIZE) * 100}%`,
-                      top: `${(segment.y / GRID_SIZE) * 100}%`,
-                      background: isHead ? '#c5a059' : 'linear-gradient(135deg, #006c35 0%, #00a150 100%)',
-                      border: '1px solid #c5a059',
-                    }}
+              />
+
+              {hasStarted && !gameOver && (
+                <>
+                  <motion.div
+                    className="absolute z-10 flex items-center justify-center drop-shadow-[0_0_12px_#e4be74]"
+                    style={{ width: `${100 / GRID_SIZE}%`, height: `${100 / GRID_SIZE}%`, left: `${(food.x / GRID_SIZE) * 100}%`, top: `${(food.y / GRID_SIZE) * 100}%` }}
+                    animate={{ scale: [1, 1.15, 1], rotate: [0, 8, -8, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
                   >
-                    {isHead && (
-                      <div className="w-full h-full relative">
-                        {/* Little black eyes on the snake head based on direction */}
-                        <div 
-                           className={`absolute bg-black rounded-full w-[25%] h-[25%] ${
-                              direction === 'UP' ? 'top-[15%] left-[15%]' : 
-                              direction === 'DOWN' ? 'bottom-[15%] left-[15%]' : 
-                              direction === 'LEFT' ? 'top-[15%] left-[15%]' : 
-                              'top-[15%] right-[15%]'
-                           }`} 
-                        />
-                        <div 
-                           className={`absolute bg-black rounded-full w-[25%] h-[25%] ${
-                              direction === 'UP' ? 'top-[15%] right-[15%]' : 
-                              direction === 'DOWN' ? 'bottom-[15%] right-[15%]' : 
-                              direction === 'LEFT' ? 'bottom-[15%] left-[15%]' : 
-                              'bottom-[15%] right-[15%]'
-                           }`} 
-                        />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </>
-          )}
+                    <Sparkles className="w-[75%] h-[75%] text-[#d9b168]" />
+                  </motion.div>
 
-          {/* Overlays */}
-          <AnimatePresence>
-            {!hasStarted && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-[#05140d]/80 backdrop-blur-[2px] flex flex-col items-center justify-center z-30"
-              >
-                <button
-                  onClick={startGame}
-                  className="w-full max-w-[200px] flex items-center justify-center gap-3 py-4 bg-[#c5a059] text-[#05140d] font-bold rounded-lg hover:bg-[#d4af37] transition-all hover:scale-105 active:scale-95 shadow-[0_4px_20px_rgba(197,160,89,0.3)] uppercase tracking-widest"
-                >
-                  <Play size={20} fill="currentColor" /> Play Now
-                </button>
-                <p className="mt-8 text-gray-500 text-xs text-center leading-relaxed uppercase tracking-widest">
-                  USE ARROW KEYS OR<br />ON-SCREEN CONTROLS
-                </p>
-              </motion.div>
-            )}
+                  {snake.map((segment, i) => {
+                    const isHead = i === 0;
+                    return (
+                      <div
+                        key={`${segment.x}-${segment.y}-${i}`}
+                        className={`absolute transition-all duration-[50ms] rounded-[4px] ${isHead ? 'z-20' : 'z-10'}`}
+                        style={{
+                          width: `${100 / GRID_SIZE}%`,
+                          height: `${100 / GRID_SIZE}%`,
+                          left: `${(segment.x / GRID_SIZE) * 100}%`,
+                          top: `${(segment.y / GRID_SIZE) * 100}%`,
+                          background: isHead ? 'linear-gradient(145deg,#f0cc86,#c89f56)' : 'linear-gradient(135deg, #13884e 0%, #0c663b 100%)',
+                          border: '1px solid rgba(255,255,255,0.2)',
+                          boxShadow: isHead ? '0 0 12px rgba(220,182,111,0.35)' : 'none',
+                        }}
+                      />
+                    );
+                  })}
+                </>
+              )}
 
-            {isPaused && hasStarted && !gameOver && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-[#05140d]/80 backdrop-blur-sm flex flex-col items-center justify-center z-30"
-              >
-                <h2 className="text-2xl font-bold uppercase text-white mb-6 tracking-widest">Paused</h2>
-                <button
-                  onClick={() => setIsPaused(false)}
-                  className="flex items-center justify-center gap-2 py-3 px-8 w-full max-w-[200px] border border-[#c5a059]/50 text-[#c5a059] font-medium rounded-lg hover:bg-white/5 transition-all hover:scale-105 active:scale-95 uppercase tracking-widest"
-                >
-                  <Play size={18} fill="currentColor" /> Resume
-                </button>
-              </motion.div>
-            )}
-
-            {gameOver && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-[#05140d]/90 backdrop-blur-md flex flex-col items-center justify-center z-30 border border-red-900/30"
-              >
-                <h2 className="text-4xl font-bold uppercase text-white mb-2 tracking-tighter">Game Over</h2>
-                <p className="text-gray-400 mb-8 text-sm uppercase tracking-widest">
-                  Final Score: <span className="text-[#c5a059] font-bold text-lg ml-1">{score}</span>
-                </p>
-
-                <button
-                  onClick={startGame}
-                  className="w-full max-w-[200px] flex items-center justify-center gap-2 py-4 bg-[#c5a059] text-[#05140d] font-bold rounded-lg hover:bg-[#d4af37] transition-all hover:scale-105 active:scale-95 shadow-[0_4px_20px_rgba(197,160,89,0.3)] uppercase tracking-widest"
-                >
-                  <RotateCcw size={18} /> Play Again
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Mobile Controls */}
-        <div className="mt-2 md:mt-4 md:hidden flex flex-col items-center gap-3 select-none">
-          <ControlButton dir="UP" Icon={ChevronUp} />
-          <div className="flex gap-16">
-            <ControlButton dir="LEFT" Icon={ChevronLeft} />
-            <ControlButton dir="RIGHT" Icon={ChevronRight} />
-          </div>
-          <ControlButton dir="DOWN" Icon={ChevronDown} />
-        </div>
-        
-        {/* Header / Score Board (Moved to bottom & scaled down) */}
-        <div className="flex justify-between items-center bg-white/5 backdrop-blur-md border border-[#c5a059]/20 rounded-xl p-3 sm:p-4 shadow-lg w-full max-w-[400px] mx-auto mt-2">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tighter text-[#c5a059] leading-none flex items-center gap-2 m-0 p-0">
-              SAUDI SNAKE
-            </h1>
-            <p className="text-[10px] text-gray-400 uppercase tracking-widest leading-none m-0 p-0">
-              Classic Edition
-            </p>
-          </div>
-
-          <div className="flex space-x-6 border-l border-white/10 pl-6">
-            <div className="flex flex-col justify-between">
-              <span className="text-[9px] sm:text-[10px] text-gray-400 mb-1 leading-none uppercase tracking-widest">Score</span>
-              <span className="text-xl sm:text-2xl font-bold text-white tracking-tighter leading-none">
-                {score.toString().padStart(4, '0')}
-              </span>
+              <AnimatePresence>
+                {!hasStarted && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#05140d]/75 backdrop-blur-md flex flex-col items-center justify-center z-30 px-6">
+                    <h2 className="text-3xl font-bold text-[#e3be73] mb-3">Saudi Snake</h2>
+                    <p className="text-sm text-gray-300 mb-6 text-center">واجهة جديدة وحركة أنعم وتجربة لعب أكثر حداثة.</p>
+                    <button onClick={startGame} className="w-full max-w-[220px] flex items-center justify-center gap-3 py-4 bg-[#d1aa62] text-[#05140d] font-bold rounded-xl hover:bg-[#e0bd7d] transition-all hover:scale-105 active:scale-95">
+                      <Play size={20} fill="currentColor" /> ابدأ اللعب
+                    </button>
+                  </motion.div>
+                )}
+                {isPaused && hasStarted && !gameOver && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#05140d]/80 backdrop-blur-sm flex flex-col items-center justify-center z-30">
+                    <Pause className="text-[#d8b06a] mb-3" />
+                    <h2 className="text-2xl font-bold text-white mb-5">متوقف مؤقتًا</h2>
+                    <button onClick={() => setIsPaused(false)} className="py-3 px-8 border border-[#d8b06a]/70 text-[#e6c98f] rounded-xl hover:bg-white/10">متابعة</button>
+                  </motion.div>
+                )}
+                {gameOver && (
+                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-[#05140d]/90 backdrop-blur-md flex flex-col items-center justify-center z-30">
+                    <h2 className="text-4xl font-bold text-white mb-2">Game Over</h2>
+                    <p className="text-gray-300 mb-6">Final Score: <span className="text-[#d8b06a] font-bold">{score}</span></p>
+                    <button onClick={startGame} className="w-full max-w-[220px] flex items-center justify-center gap-2 py-4 bg-[#d1aa62] text-[#05140d] font-bold rounded-xl hover:bg-[#e0bd7d] transition-all"><RotateCcw size={18} /> لعب مرة أخرى</button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-            <div className="flex flex-col justify-between">
-              <span className="text-[9px] sm:text-[10px] text-gray-400 mb-1 flex items-center gap-1 leading-none uppercase tracking-widest">
-                High
-              </span>
-              <span className="text-lg sm:text-xl font-semibold text-[#006c35] tracking-tighter leading-none">
-                {highScore.toString().padStart(4, '0')}
-              </span>
+
+            <div className="mt-4 md:hidden flex flex-col items-center gap-3 select-none">
+              <ControlButton dir="UP" Icon={ChevronUp} />
+              <div className="flex gap-16"><ControlButton dir="LEFT" Icon={ChevronLeft} /><ControlButton dir="RIGHT" Icon={ChevronRight} /></div>
+              <ControlButton dir="DOWN" Icon={ChevronDown} />
             </div>
-          </div>
+          </section>
+
+          <aside className="order-1 lg:order-2 bg-white/8 backdrop-blur-xl border border-white/15 rounded-3xl p-5 sm:p-6 shadow-2xl">
+            <h1 className="text-3xl font-extrabold text-[#e7c380] tracking-tight mb-2">SAUDI SNAKE</h1>
+            <p className="text-sm text-gray-300 mb-6">تصميم حديث بطابع بصري متطور وتحكم سريع بلوحة المفاتيح أو الأزرار.</p>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <div className="rounded-2xl bg-black/20 border border-white/10 p-4">
+                <p className="text-xs text-gray-400 mb-1">Score</p>
+                <p className="text-3xl font-bold">{score.toString().padStart(4, '0')}</p>
+              </div>
+              <div className="rounded-2xl bg-black/20 border border-white/10 p-4">
+                <p className="text-xs text-gray-400 mb-1 flex items-center gap-1"><Trophy size={14} /> High</p>
+                <p className="text-3xl font-bold text-[#61d18b]">{highScore.toString().padStart(4, '0')}</p>
+              </div>
+            </div>
+            <ul className="space-y-2 text-sm text-gray-200 leading-6">
+              <li>• الأسهم أو WASD للحركة</li>
+              <li>• المسافة أو ESC للإيقاف المؤقت</li>
+              <li>• كل نقطة تزيد السرعة تلقائيًا</li>
+            </ul>
+          </aside>
         </div>
       </div>
     </div>
   );
 }
-
